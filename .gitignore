@@ -1,0 +1,25 @@
+# build
+
+*.class
+
+# packages
+*.jar
+*.war
+*.ear
+
+# eclipse
+.classpath
+.project
+.settings/
+
+# intelliJ
+.idea/
+*.iml
+*.iws
+
+# mac
+.DS_Store
+
+# maven
+log/
+target/
