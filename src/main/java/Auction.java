@@ -58,14 +58,21 @@ public class Auction {
     public Offer getHighestOffer() {
 
         Collections.sort(offers);
-
         return offers.get(0);
     }
 
-    public void addOffer(Offer offer) {
+    public void makeOffer(Offer offer) {
         if (offer.getPrice().compareTo(this.minimalOffer) < 0) {
             throw new IllegalArgumentException("Minimal offer is " + minimalOffer +
                     " yours is " + offer.getPrice());
+        }
+
+        if (offer.getBidder() == this.creator) {
+            throw new IllegalArgumentException("You cannot bid on your own auction");
+        }
+
+        if (this.state != AuctionState.PUBLISHED) {
+            throw new IllegalStateException("You cannot bid on an auction that is not in the published state");
         }
 
         offers.add(offer);
@@ -74,4 +81,9 @@ public class Auction {
     public boolean isReservePriceReached() {
         return getHighestOffer().getPrice().compareTo(this.reservePrice) >= 0;
     }
+
+    public User getPublisher() {
+        return this.creator;
+    }
+
 }

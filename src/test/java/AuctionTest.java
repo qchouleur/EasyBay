@@ -1,4 +1,3 @@
-
 import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -127,6 +126,27 @@ public class AuctionTest {
         Assert.assertFalse(auction.isReservePriceReached());
         bidder.bid(auction, new BigDecimal(500));
         Assert.assertTrue(auction.isReservePriceReached());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void UserCannotBidOnUnpublishedOffer() {
+
+        User lambdaUser = new User();
+
+        Auction auction = new Auction(auctionCreator, item, auctionEndingDate, reservePrice, minimalOffer);
+
+        Offer offer = new Offer(lambdaUser, new BigDecimal(400));
+        auction.makeOffer(offer);
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void UserCannotBidHisOwnOffer() {
+
+        Auction auction = new Auction(auctionCreator, item, auctionEndingDate, reservePrice, minimalOffer);
+        Offer offer = new Offer(auctionCreator, new BigDecimal(400));
+        auction.makeOffer(offer);
+
     }
 
 }
