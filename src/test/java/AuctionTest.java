@@ -141,12 +141,33 @@ public class AuctionTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void UserCannotBidHisOwnOffer() {
+    public void UserCannotBidHisOwnAuction() {
 
         Auction auction = new Auction(auctionCreator, item, auctionEndingDate, reservePrice, minimalOffer);
         Offer offer = new Offer(auctionCreator, new BigDecimal(400));
         auction.makeOffer(offer);
-
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void UserCannotBidOnCanceledAuction() {
+        User lambdaUser = new User();
+
+        Auction auction = auctionCreator.createAuction(item, auctionEndingDate, reservePrice, minimalOffer);
+        auction.cancel();
+
+        Assert.assertEquals(auction.getState(), AuctionState.CANCELED);
+        auction.makeOffer(new Offer(lambdaUser, minimalOffer));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void UserCannotBidOnClosedAuction() {
+        User lambdaUser = new User();
+
+        Auction auction = auctionCreator.createAuction(item, new Date(), reservePrice, minimalOffer);
+
+        Assert.assertEquals(auction.getState(), AuctionState.CLOSED);
+        auction.makeOffer(new Offer(lambdaUser, minimalOffer));
+    }
+
 
 }
