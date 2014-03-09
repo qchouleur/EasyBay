@@ -44,7 +44,8 @@ public class Auction {
     }
 
     public AuctionState getState() {
-        if (auctionEndingDate.before(clock.now())) {
+        if (auctionEndingDate.before(clock.now())
+                || clock.now().equals(auctionEndingDate)) {
             this.state = AuctionState.CLOSED;
         }
         return this.state;

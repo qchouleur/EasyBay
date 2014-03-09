@@ -87,8 +87,10 @@ public class AuctionTest {
 
         // The provided ending date is expired by the time we get to the
         // get state method
-        Auction auction = auctionCreator.createAuction(item, new Date(), reservePrice, minimalOffer);
-        Assert.assertEquals(auction.getState(), AuctionState.CLOSED);
+        FakeClock fakeClock = new FakeClock(auctionEndingDate);
+        Auction auction = new Auction(auctionCreator, fakeClock, item, auctionEndingDate, reservePrice, minimalOffer);
+
+        Assert.assertEquals(AuctionState.CLOSED, auction.getState());
     }
 
     @Test
