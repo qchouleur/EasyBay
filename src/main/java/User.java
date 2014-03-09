@@ -10,7 +10,7 @@ public class User {
     }
 
     public Auction createAuction(Item item, Date auctionEndingDate, BigDecimal reservePrice, BigDecimal minimalOffer) {
-        return new Auction(this, item, auctionEndingDate, reservePrice, minimalOffer);
+        return new Auction(this, new RealClock(), item, auctionEndingDate, reservePrice, minimalOffer);
     }
 
 }

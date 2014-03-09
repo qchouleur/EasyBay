@@ -14,11 +14,8 @@ public class AuctionServiceTest {
     private static BigDecimal minimumOffer;
     private static Item item;
 
-    private static User publisher;
     private static User lambdaUser;
-
     private static Auction auction;
-
     private static AuctionService auctionService;
 
     @BeforeClass
@@ -31,11 +28,11 @@ public class AuctionServiceTest {
         minimumOffer = new BigDecimal(20);
         item = new Item();
 
-        publisher = new User();
+        User publisher = new User();
         lambdaUser = new User();
 
         auctionService = new AuctionService();
-        auction = new Auction(publisher, item, endingDate, reservePrice, minimumOffer);
+        auction = new Auction(publisher, new RealClock(), item, endingDate, reservePrice, minimumOffer);
     }
 
     @Test
@@ -55,7 +52,7 @@ public class AuctionServiceTest {
 
         auctionService.createAuction(auction);
 
-        Auction auctionLambda = new Auction(lambdaUser, item, endingDate, reservePrice, minimumOffer);
+        Auction auctionLambda = new Auction(lambdaUser, new RealClock(), item, endingDate, reservePrice, minimumOffer);
         auctionService.createAuction(auctionLambda);
 
         List<Auction> auctions = auctionService.getAvailableAuctionsForUser(lambdaUser);

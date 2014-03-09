@@ -16,8 +16,10 @@ public class Auction {
     private final BigDecimal reservePrice;
     private final BigDecimal minimalOffer;
     private final List<Offer> offers;
+    private final Clock clock;
+    private final Item item;
 
-    public Auction(User creator, Item item, Date auctionEndingDate, BigDecimal reservePrice, BigDecimal minimalOffer) {
+    public Auction(User creator, Clock clock, Item item, Date auctionEndingDate, BigDecimal reservePrice, BigDecimal minimalOffer) {
         if (!dateFormat.format(auctionEndingDate).equals(dateFormat.format(new Date())) &&
                 auctionEndingDate.before(new Date())) {
             throw new IllegalArgumentException("invalid auction ending date");
@@ -37,11 +39,12 @@ public class Auction {
         this.reservePrice = reservePrice;
         this.minimalOffer = minimalOffer;
         this.offers = new ArrayList<Offer>();
+        this.clock = clock;
+        this.item = item;
     }
 
-    // TODO : Meilleur gestion date expiration
     public AuctionState getState() {
-        if (auctionEndingDate.before(new Date())) {
+        if (auctionEndingDate.before(clock.now())) {
             this.state = AuctionState.CLOSED;
         }
         return this.state;

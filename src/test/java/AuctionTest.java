@@ -44,18 +44,16 @@ public class AuctionTest {
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         Date auctionEndingDate = simpleDateFormat.parse("15/06/1989");
-
-        Auction auction = auctionCreator.createAuction(item, auctionEndingDate, reservePrice, minimalOffer);
+        auctionCreator.createAuction(item, auctionEndingDate, reservePrice, minimalOffer);
 
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void AuctionCreationWithInvalidReservePriceShouldFail() throws ParseException {
 
-        // A reserve price of 0 is valid, it is optional
+        // A reserve price of 0 is valid, it means it is optional
         BigDecimal reservePrice = new BigDecimal(-0.1);
-
-        Auction auction = auctionCreator.createAuction(item, auctionEndingDate, reservePrice, minimalOffer);
+        auctionCreator.createAuction(item, auctionEndingDate, reservePrice, minimalOffer);
 
     }
 
@@ -63,8 +61,7 @@ public class AuctionTest {
     public void AuctionCreationWithInvalidMinimalOfferShouldFail() throws ParseException {
         // A minimalOffer of 0 is valid, it means that the vendor accept any price
         BigDecimal minimalOffer = new BigDecimal(-0.1);
-
-        Auction auction = auctionCreator.createAuction(item, auctionEndingDate, reservePrice, minimalOffer);
+        auctionCreator.createAuction(item, auctionEndingDate, reservePrice, minimalOffer);
     }
 
     @Test
@@ -99,6 +96,7 @@ public class AuctionTest {
         User loser = new User();
         User winner = new User();
         Auction auction = auctionCreator.createAuction(item, new Date(), reservePrice, minimalOffer);
+        auction.publish();
 
         loser.bid(auction, minimalOffer);
         winner.bid(auction, new BigDecimal(400));
@@ -121,6 +119,7 @@ public class AuctionTest {
         User bidder = new User();
 
         Auction auction = auctionCreator.createAuction(item, new Date(), new BigDecimal(500), minimalOffer);
+        auction.publish();
 
         bidder.bid(auction, new BigDecimal(400));
         Assert.assertFalse(auction.isReservePriceReached());
@@ -133,7 +132,7 @@ public class AuctionTest {
 
         User lambdaUser = new User();
 
-        Auction auction = new Auction(auctionCreator, item, auctionEndingDate, reservePrice, minimalOffer);
+        Auction auction = new Auction(auctionCreator, new RealClock(), item, auctionEndingDate, reservePrice, minimalOffer);
 
         Offer offer = new Offer(lambdaUser, new BigDecimal(400));
         auction.makeOffer(offer);
@@ -143,7 +142,7 @@ public class AuctionTest {
     @Test(expected = IllegalArgumentException.class)
     public void UserCannotBidHisOwnAuction() {
 
-        Auction auction = new Auction(auctionCreator, item, auctionEndingDate, reservePrice, minimalOffer);
+        Auction auction = new Auction(auctionCreator, new RealClock(), item, auctionEndingDate, reservePrice, minimalOffer);
         Offer offer = new Offer(auctionCreator, new BigDecimal(400));
         auction.makeOffer(offer);
     }
