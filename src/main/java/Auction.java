@@ -1,3 +1,5 @@
+import time.Clock;
+
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -80,6 +82,8 @@ public class Auction {
         }
 
         offers.add(offer);
+
+        this.getPublisher().AddAlert(new Alert(this, offer.getBidder().name() + " a fait une offre de " + offer.getPrice() + " sur la vente " + this.item.id()));
     }
 
     public boolean isReservePriceReached() {
