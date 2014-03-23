@@ -1,3 +1,4 @@
+package auction;
 public enum AuctionState {
 
     CREATED,

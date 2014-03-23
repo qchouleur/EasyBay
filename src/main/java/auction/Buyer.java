@@ -1,3 +1,4 @@
+package auction;
 import java.math.BigDecimal;
 
 public interface Buyer {

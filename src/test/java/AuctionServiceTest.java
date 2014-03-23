@@ -1,5 +1,12 @@
 import org.junit.Before;
 import org.junit.Test;
+
+import auction.Auction;
+import auction.AuctionService;
+import auction.AuctionState;
+import auction.Item;
+import auction.User;
+
 import time.RealClock;
 import junit.framework.Assert;
 

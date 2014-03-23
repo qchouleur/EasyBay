@@ -1,3 +1,4 @@
+package auction;
 public class Item {
 
     private String id;

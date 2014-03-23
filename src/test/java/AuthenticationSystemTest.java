@@ -1,6 +1,9 @@
 import org.junit.Assert;
 import org.junit.Test;
 
+import auction.AuthenticationSystem;
+
+
 public class AuthenticationSystemTest {
 
     @Test

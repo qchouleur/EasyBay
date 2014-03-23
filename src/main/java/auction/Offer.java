@@ -1,8 +1,9 @@
+package auction;
 import java.math.BigDecimal;
 
 public class Offer implements Comparable<Offer> {
 
-    private final Buyer bidder;
+    private final User bidder;
     private final BigDecimal price;
 
     public Offer(User bidder, BigDecimal price) {
@@ -11,12 +12,11 @@ public class Offer implements Comparable<Offer> {
         this.price = price;
     }
 
-    @Override
     public int compareTo(Offer offer) {
         return -this.price.compareTo(offer.price);
     }
 
-    public Buyer getBidder() {
+    public User getBidder() {
         return this.bidder;
     }
 

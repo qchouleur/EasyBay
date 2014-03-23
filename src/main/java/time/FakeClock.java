@@ -11,7 +11,6 @@ public class FakeClock implements Clock {
         this.date = date;
     }
 
-    @Override
     public Date now() {
         return this.date;
     }

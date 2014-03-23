@@ -1,3 +1,4 @@
+package auction;
 import time.RealClock;
 
 import java.math.BigDecimal;

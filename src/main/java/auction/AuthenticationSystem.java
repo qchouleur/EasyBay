@@ -1,3 +1,4 @@
+package auction;
 import java.util.HashMap;
 
 public class AuthenticationSystem {

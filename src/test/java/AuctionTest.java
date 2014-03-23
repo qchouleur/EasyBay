@@ -1,6 +1,13 @@
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import auction.Auction;
+import auction.AuctionState;
+import auction.Item;
+import auction.Offer;
+import auction.User;
+
 import time.FakeClock;
 import time.RealClock;
 

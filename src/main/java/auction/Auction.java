@@ -1,3 +1,4 @@
+package auction;
 import time.Clock;
 
 import java.math.BigDecimal;
@@ -7,10 +8,15 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public class Auction {
+import observable.Observable;
+import observable.Observateur;
+
+
+
+public class Auction implements Observable{
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-
+    
     private AuctionState state;
 
     private final Seller seller;
@@ -20,6 +26,8 @@ public class Auction {
     private final List<Offer> offers;
     private final Clock clock;
     private final Item item;
+    
+    private ArrayList<Observateur> listObservateur = new ArrayList<Observateur>();
 
     public Auction(Seller seller, Clock clock, Item item, Date auctionEndingDate, BigDecimal reservePrice, BigDecimal minimalOffer) {
         if (!dateFormat.format(auctionEndingDate).equals(dateFormat.format(new Date())) &&
@@ -55,10 +63,14 @@ public class Auction {
 
     public void publish() {
         this.state = AuctionState.PUBLISHED;
+        Alert alert = new Alert(this,"Auction is published");
+        this.updateObservateur(alert);
     }
 
     public void cancel() {
         this.state = AuctionState.CANCELED;
+        Alert alert = new Alert(this,"Auction is canceled");
+        this.updateObservateur(alert);
     }
 
     public Offer getHighestOffer() {
@@ -93,5 +105,21 @@ public class Auction {
     public Seller getPublisher() {
         return this.seller;
     }
-
+    
+    //Ajoute un observateur à la liste
+    public void addObservateur(Observateur obs) {
+      this.listObservateur.add(obs);
+    }
+    //Retire tous les observateurs de la liste
+    public void delObservateur() {
+      this.listObservateur = new ArrayList<Observateur>();
+    }
+    //Avertit les observateurs que l'objet observable a changé et invoque la méthode update() de chaque observateur
+    public void updateObservateur() {
+    	for(Observateur obs : this.listObservateur )
+		{
+    		User user = (User) seller;
+	        obs.update(user.getPendingAlerts().get(0));
+	    }	
+    }
 }
