@@ -1,5 +1,5 @@
 import junit.framework.Assert;
-import observable.Observateur;
+import observable.ObserverSeller;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -16,7 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class UserTest {
+public class UserTest implements ObserverSeller{
 
 
     private static User author;
@@ -72,9 +72,9 @@ public class UserTest {
 
 
         Auction auction = new Auction(author, new RealClock(), item, endingDate, reservePrice, minimumOffer);
-        auction.addObservateur(new Observateur(){
+        auction.addObserver(new ObserverSeller(){
             public void update(Alert alert) {
-                alert.getMessage();
+                
               }
             });
         auction.publish();
@@ -88,4 +88,7 @@ public class UserTest {
         //Assert.assertEquals("tutu le babtou a fait une offre de 200 sur la vente Lampadaire215", newBidAlert.getMessage());
     }
 
+	public void update(Alert alert) {
+		alert.getMessage();
+	}
 }

@@ -9,7 +9,8 @@ import java.util.Date;
 import java.util.List;
 
 import observable.Observable;
-import observable.Observateur;
+import observable.ObserverBuyer;
+import observable.ObserverSeller;
 
 
 
@@ -27,7 +28,8 @@ public class Auction implements Observable{
     private final Clock clock;
     private final Item item;
     
-    private ArrayList<Observateur> listObservateur = new ArrayList<Observateur>();
+    private ArrayList<ObserverSeller> listObserverSeller = new ArrayList<ObserverSeller>();
+    private ArrayList<ObserverBuyer> listObserverBuyer = new ArrayList<ObserverBuyer>();
 
     public Auction(Seller seller, Clock clock, Item item, Date auctionEndingDate, BigDecimal reservePrice, BigDecimal minimalOffer) {
         if (!dateFormat.format(auctionEndingDate).equals(dateFormat.format(new Date())) &&
@@ -63,14 +65,12 @@ public class Auction implements Observable{
 
     public void publish() {
         this.state = AuctionState.PUBLISHED;
-        Alert alert = new Alert(this,"Auction is published");
-        this.updateObservateur(alert);
     }
 
     public void cancel() {
         this.state = AuctionState.CANCELED;
         Alert alert = new Alert(this,"Auction is canceled");
-        this.updateObservateur(alert);
+        this.updateOberverBuyer(alert);
     }
 
     public Offer getHighestOffer() {
@@ -99,27 +99,47 @@ public class Auction implements Observable{
     }
 
     public boolean isReservePriceReached() {
-        return getHighestOffer().getPrice().compareTo(this.reservePrice) >= 0;
+        if(getHighestOffer().getPrice().compareTo(this.reservePrice) >= 0)
+        {
+        	Alert alert = new Alert(this,"Reserve price is reached");
+        	this.updateOberverBuyer(alert);
+        	return true;
+        }
+        else
+        	return false;
     }
 
     public Seller getPublisher() {
         return this.seller;
     }
     
-    //Ajoute un observateur à la liste
-    public void addObservateur(Observateur obs) {
-      this.listObservateur.add(obs);
+    //Seller
+    
+    public void addObserver(ObserverSeller obs) {
+      this.listObserverSeller.add(obs);
     }
-    //Retire tous les observateurs de la liste
-    public void delObservateur() {
-      this.listObservateur = new ArrayList<Observateur>();
+    
+    public void delObserverSeller() {
+      this.listObserverSeller = new ArrayList<ObserverSeller>();
     }
-    //Avertit les observateurs que l'objet observable a changé et invoque la méthode update() de chaque observateur
-    public void updateObservateur() {
-    	for(Observateur obs : this.listObservateur )
-		{
-    		User user = (User) seller;
-	        obs.update(user.getPendingAlerts().get(0));
-	    }	
+    
+    public void updateSeller(Alert alert) {
+		for(ObserverSeller obs : this.listObserverSeller )
+			obs.updateSeller(alert);
+	}
+	
+	//Buyer
+	
+    public void addObserver(ObserverBuyer obs) {
+      this.listObserverBuyer.add(obs);
     }
+    
+    public void delObserverBuyer() {
+      this.listObserverBuyer = new ArrayList<ObserverBuyer>();
+    }
+  
+    public void updateOberverBuyer(Alert alert) {
+  		for(ObserverBuyer obs : this.listObserverBuyer )
+  			obs.updateBuyer(alert);
+  	}
 }

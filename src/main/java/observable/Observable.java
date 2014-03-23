@@ -4,8 +4,11 @@ import auction.Alert;
 
 public interface Observable {
 	
-	  public void addObservateur(Observateur obs);
-	  public void updateObservateur(Alert alert);
-	  public void delObservateur();
-	  
-	}
+  public void addObserver(ObserverSeller obs);
+  public void addObserver(ObserverBuyer obs);
+  public void updateOberverBuyer(Alert alert);
+  public void updateOberverSeller(Alert alert);
+  public void delObserverBuyer();
+  public void delObserverSeller();
+  
+}
