@@ -1,5 +1,5 @@
 import junit.framework.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import time.RealClock;
 
@@ -11,16 +11,16 @@ import java.util.List;
 public class UserTest {
 
 
-    private static User author;
-    private static User bidder;
-    private static Alert alert;
+    private User author;
+    private User bidder;
+    private Alert alert;
 
 
-    @BeforeClass
-    public static void setUp() {
-        author = new User("toto le sri");
-        bidder = new User("tutu le babtou");
-        alert = new Alert();
+    @Before
+    public void setUp() {
+        this.author = new User("toto le sri");
+        this.bidder = new User("tutu le babtou");
+        this.alert = new Alert();
     }
 
     @Test

@@ -1,7 +1,7 @@
-import junit.framework.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import time.RealClock;
+import junit.framework.Assert;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -10,17 +10,17 @@ import java.util.List;
 
 public class AuctionServiceTest {
 
-    private static Date endingDate;
-    private static BigDecimal reservePrice;
-    private static BigDecimal minimumOffer;
-    private static Item item;
+    private Date endingDate;
+    private BigDecimal reservePrice;
+    private BigDecimal minimumOffer;
+    private Item item;
 
-    private static User lambdaUser;
-    private static Auction auction;
-    private static AuctionService auctionService;
+    private User lambdaUser;
+    private Auction auction;
+    private AuctionService auctionService;
 
-    @BeforeClass
-    public static void setUp() {
+    @Before
+    public void setUp() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2020, Calendar.JANUARY, 9);
         endingDate = calendar.getTime();

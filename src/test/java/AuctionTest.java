@@ -1,5 +1,5 @@
 import junit.framework.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import time.FakeClock;
 import time.RealClock;
@@ -12,15 +12,15 @@ import java.util.Date;
 
 public class AuctionTest {
 
-    private static Item item;
-    private static Date auctionEndingDate;
-    private static BigDecimal reservePrice;
-    private static BigDecimal minimalOffer;
-    private static User auctionCreator;
+    private Item item;
+    private Date auctionEndingDate;
+    private BigDecimal reservePrice;
+    private BigDecimal minimalOffer;
+    private User auctionCreator;
 
 
-    @BeforeClass
-    public static void setUp() throws ParseException {
+    @Before
+    public void setUp() throws ParseException {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
