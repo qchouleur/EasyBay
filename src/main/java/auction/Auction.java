@@ -70,7 +70,7 @@ public class Auction implements Observable{
     public void cancel() {
         this.state = AuctionState.CANCELED;
         Alert alert = new Alert(this,"Auction is canceled");
-        this.updateOberverBuyer(alert);
+        this.updateObserverBuyer(alert);
     }
 
     public Offer getHighestOffer() {
@@ -94,7 +94,10 @@ public class Auction implements Observable{
         }
 
         offers.add(offer);
-
+        
+        this.updateObserverSeller(new Alert(this, offer.getBidder().name() + " a fait une offre de " + offer.getPrice() + " sur la vente " + this.item.id()));
+        this.updateObserverBuyer(new Alert(this, offer.getBidder().name() + " a fait une offre de " + offer.getPrice() + " sur la vente " + this.item.id()));
+ 
         this.getPublisher().AddAlert(new Alert(this, offer.getBidder().name() + " a fait une offre de " + offer.getPrice() + " sur la vente " + this.item.id()));
     }
 
@@ -102,7 +105,7 @@ public class Auction implements Observable{
         if(getHighestOffer().getPrice().compareTo(this.reservePrice) >= 0)
         {
         	Alert alert = new Alert(this,"Reserve price is reached");
-        	this.updateOberverBuyer(alert);
+        	this.updateObserverBuyer(alert);
         	return true;
         }
         else
@@ -123,7 +126,7 @@ public class Auction implements Observable{
       this.listObserverSeller = new ArrayList<ObserverSeller>();
     }
     
-    public void updateSeller(Alert alert) {
+    public void updateObserverSeller(Alert alert) {
 		for(ObserverSeller obs : this.listObserverSeller )
 			obs.updateSeller(alert);
 	}
@@ -138,7 +141,7 @@ public class Auction implements Observable{
       this.listObserverBuyer = new ArrayList<ObserverBuyer>();
     }
   
-    public void updateOberverBuyer(Alert alert) {
+    public void updateObserverBuyer(Alert alert) {
   		for(ObserverBuyer obs : this.listObserverBuyer )
   			obs.updateBuyer(alert);
   	}

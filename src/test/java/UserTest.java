@@ -16,7 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class UserTest implements ObserverSeller{
+public class UserTest {
 
 
     private static User author;
@@ -73,8 +73,8 @@ public class UserTest implements ObserverSeller{
 
         Auction auction = new Auction(author, new RealClock(), item, endingDate, reservePrice, minimumOffer);
         auction.addObserver(new ObserverSeller(){
-            public void update(Alert alert) {
-                
+            public void updateSeller(Alert alert) {
+                alert.getMessage();
               }
             });
         auction.publish();
