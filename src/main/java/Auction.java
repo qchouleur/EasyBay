@@ -13,7 +13,7 @@ public class Auction {
 
     private AuctionState state;
 
-    private final User creator;
+    private final Seller seller;
     private final Date auctionEndingDate;
     private final BigDecimal reservePrice;
     private final BigDecimal minimalOffer;
@@ -21,7 +21,7 @@ public class Auction {
     private final Clock clock;
     private final Item item;
 
-    public Auction(User creator, Clock clock, Item item, Date auctionEndingDate, BigDecimal reservePrice, BigDecimal minimalOffer) {
+    public Auction(Seller seller, Clock clock, Item item, Date auctionEndingDate, BigDecimal reservePrice, BigDecimal minimalOffer) {
         if (!dateFormat.format(auctionEndingDate).equals(dateFormat.format(new Date())) &&
                 auctionEndingDate.before(new Date())) {
             throw new IllegalArgumentException("invalid auction ending date");
@@ -35,7 +35,7 @@ public class Auction {
             throw new IllegalArgumentException("minimal offer should be positive");
         }
 
-        this.creator = creator;
+        this.seller = seller;
         this.state = AuctionState.CREATED;
         this.auctionEndingDate = auctionEndingDate;
         this.reservePrice = reservePrice;
@@ -73,12 +73,12 @@ public class Auction {
                     " yours is " + offer.getPrice());
         }
 
-        if (offer.getBidder() == this.creator) {
-            throw new IllegalArgumentException("You cannot bid on your own auction");
+        if (offer.getBidder() == this.seller) {
+            throw new IllegalArgumentException("You cannot placeBid on your own auction");
         }
 
         if (this.state != AuctionState.PUBLISHED) {
-            throw new IllegalStateException("You cannot bid on an auction that is not in the published state");
+            throw new IllegalStateException("You cannot placeBid on an auction that is not in the published state");
         }
 
         offers.add(offer);
@@ -90,8 +90,8 @@ public class Auction {
         return getHighestOffer().getPrice().compareTo(this.reservePrice) >= 0;
     }
 
-    public User getPublisher() {
-        return this.creator;
+    public Seller getPublisher() {
+        return this.seller;
     }
 
 }

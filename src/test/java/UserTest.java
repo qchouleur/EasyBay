@@ -66,7 +66,7 @@ public class UserTest {
         Auction auction = new Auction(author, new RealClock(), item, endingDate, reservePrice, minimumOffer);
         auction.publish();
 
-        bidder.bid(auction, new BigDecimal(200));
+        bidder.placeBid(auction, new BigDecimal(200));
 
         Alert newBidAlert = author.getPendingAlerts().get(0);
 

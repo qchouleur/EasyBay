@@ -102,8 +102,8 @@ public class AuctionTest {
         Auction auction = auctionCreator.createAuction(item, new Date(), reservePrice, minimalOffer);
         auction.publish();
 
-        loser.bid(auction, minimalOffer);
-        winner.bid(auction, new BigDecimal(400));
+        loser.placeBid(auction, minimalOffer);
+        winner.placeBid(auction, new BigDecimal(400));
 
         Assert.assertEquals(winner, auction.getHighestOffer().getBidder());
     }
@@ -114,7 +114,7 @@ public class AuctionTest {
 
         Auction auction = auctionCreator.createAuction(item, new Date(), reservePrice, minimalOffer);
 
-        bidder.bid(auction, new BigDecimal(0));
+        bidder.placeBid(auction, new BigDecimal(0));
 
     }
 
@@ -125,9 +125,9 @@ public class AuctionTest {
         Auction auction = auctionCreator.createAuction(item, new Date(), new BigDecimal(500), minimalOffer);
         auction.publish();
 
-        bidder.bid(auction, new BigDecimal(400));
+        bidder.placeBid(auction, new BigDecimal(400));
         Assert.assertFalse(auction.isReservePriceReached());
-        bidder.bid(auction, new BigDecimal(500));
+        bidder.placeBid(auction, new BigDecimal(500));
         Assert.assertTrue(auction.isReservePriceReached());
     }
 

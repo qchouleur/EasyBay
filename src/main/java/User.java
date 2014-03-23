@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class User {
+public class User implements Buyer, Seller{
 
 
     private final String name;
@@ -20,7 +20,7 @@ public class User {
 
     private List<Alert> pendingAlerts = new ArrayList<Alert>();
 
-    public void bid(Auction auction, BigDecimal price) {
+    public void placeBid(Auction auction, BigDecimal price) {
 
         auction.makeOffer(new Offer(this, price));
     }
