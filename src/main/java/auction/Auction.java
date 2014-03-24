@@ -81,20 +81,21 @@ public class Auction implements Observable{
         }
 
         if (offer.getBidder() == this.seller) {
-            throw new IllegalArgumentException("You cannot placeBid on your own auction");
+            throw new IllegalArgumentException("You cannot place a bid on your own auction");
         }
 
         if (this.state != AuctionState.PUBLISHED) {
-            throw new IllegalStateException("You cannot placeBid on an auction that is not in the published state");
+            throw new IllegalStateException("You cannot place a bid on an auction that is not in the published state");
         }
 
 
         if (winningOffer == null) {
             this.winningOffer = offer;
+        } else if (offer.isGreaterOrEqual(getPriceToReach())) {
+            this.winningOffer = offer;
         } else {
-            if (!this.winningOffer.isGreaterThan(offer)) {
-                this.winningOffer = offer;
-            }
+            throw new IllegalArgumentException("Your offer should at least be of " + getPriceToReach() +
+                    " yours is " + offer.getPrice());
         }
 
 
@@ -102,6 +103,12 @@ public class Auction implements Observable{
         this.updateObserverBuyer(new Alert(this, offer.getBidder().name() + " a fait une offre de " + offer.getPrice() + " sur la vente " + this.item.id()));
  
         this.getPublisher().AddAlert(new Alert(this, offer.getBidder().name() + " a fait une offre de " + offer.getPrice() + " sur la vente " + this.item.id()));
+    }
+
+    public BigDecimal getPriceToReach() {
+
+        BigDecimal currentPrice = winningOffer.getPrice();
+        return currentPrice.add(BidIncrement.incrementForPrice(winningOffer.getPrice()));
     }
 
     public boolean isReservePriceReached() {

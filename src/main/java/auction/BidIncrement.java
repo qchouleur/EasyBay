@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 public class BidIncrement {
 
 
-    public BigDecimal incrementForPrice(BigDecimal price) {
+    public static BigDecimal incrementForPrice(BigDecimal price) {
         for (BidIncrementRange range : BidIncrementRange.values()) {
             if (range.contains(price)) {
                 return range.increment();
