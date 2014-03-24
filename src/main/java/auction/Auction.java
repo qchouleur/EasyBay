@@ -1,16 +1,14 @@
 package auction;
+
+import observable.Observable;
+import observable.ObserverBuyer;
+import observable.ObserverSeller;
 import time.Clock;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
-
-import observable.Observable;
-import observable.ObserverBuyer;
-import observable.ObserverSeller;
 
 
 
@@ -24,7 +22,7 @@ public class Auction implements Observable{
     private final Date auctionEndingDate;
     private final BigDecimal reservePrice;
     private final BigDecimal minimalOffer;
-    private final List<Offer> offers;
+    private Offer winningOffer;
     private final Clock clock;
     private final Item item;
     
@@ -50,7 +48,6 @@ public class Auction implements Observable{
         this.auctionEndingDate = auctionEndingDate;
         this.reservePrice = reservePrice;
         this.minimalOffer = minimalOffer;
-        this.offers = new ArrayList<Offer>();
         this.clock = clock;
         this.item = item;
     }
@@ -74,9 +71,7 @@ public class Auction implements Observable{
     }
 
     public Offer getHighestOffer() {
-
-        Collections.sort(offers);
-        return offers.get(0);
+        return this.winningOffer;
     }
 
     public void makeOffer(Offer offer) {
@@ -93,8 +88,16 @@ public class Auction implements Observable{
             throw new IllegalStateException("You cannot placeBid on an auction that is not in the published state");
         }
 
-        offers.add(offer);
-        
+
+        if (winningOffer == null) {
+            this.winningOffer = offer;
+        } else {
+            if (!this.winningOffer.isGreaterThan(offer)) {
+                this.winningOffer = offer;
+            }
+        }
+
+
         this.updateObserverSeller(new Alert(this, offer.getBidder().name() + " a fait une offre de " + offer.getPrice() + " sur la vente " + this.item.id()));
         this.updateObserverBuyer(new Alert(this, offer.getBidder().name() + " a fait une offre de " + offer.getPrice() + " sur la vente " + this.item.id()));
  

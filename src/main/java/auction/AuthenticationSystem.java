@@ -14,7 +14,7 @@ public class AuthenticationSystem {
     public static void initUser() {
         users.put("Nero", "chou78200");
         users.put("Chat", "nero91300");
-        users.put("Godffroy", "ilovecocks");
+        users.put("Godffroy", "wut");
         users.put("Jean", "iwinulose");
         users.put("Lucky", "f4sterThanSh4d0w");
     }

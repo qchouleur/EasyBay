@@ -16,6 +16,10 @@ public class Offer implements Comparable<Offer> {
         return -this.price.compareTo(offer.price);
     }
 
+    public boolean isGreaterThan(Offer offer) {
+        return this.price.compareTo(offer.price) > 0;
+    }
+
     public User getBidder() {
         return this.bidder;
     }
