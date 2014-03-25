@@ -1,13 +1,7 @@
+import auction.*;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import auction.Auction;
-import auction.AuctionState;
-import auction.Item;
-import auction.Offer;
-import auction.User;
-
 import time.FakeClock;
 import time.RealClock;
 
@@ -138,6 +132,7 @@ public class AuctionTest {
         Assert.assertTrue(auction.isReservePriceReached());
     }
 
+    // Spécification : Un utilisateur ne peut pas placer d'offre sur une vente aux enchères non publiée
     @Test(expected = IllegalStateException.class)
     public void UserCannotBidOnUnpublishedOffer() {
 
@@ -150,6 +145,7 @@ public class AuctionTest {
 
     }
 
+    // Spécification : Un utilisateur ne peut pas placer d'offre sur sa propre vente aux enchères
     @Test(expected = IllegalArgumentException.class)
     public void UserCannotBidHisOwnAuction() {
 
@@ -158,6 +154,7 @@ public class AuctionTest {
         auction.makeOffer(offer);
     }
 
+    // Spécification : On ne peut placer d'offre sur une vente aux enchères annulée
     @Test(expected = IllegalStateException.class)
     public void UserCannotBidOnCanceledAuction() {
         User lambdaUser = new User();
@@ -169,6 +166,7 @@ public class AuctionTest {
         auction.makeOffer(new Offer(lambdaUser, minimalOffer));
     }
 
+    // Spécification : On ne peut placer d'offre sur une vente aux enchères terminées
     @Test(expected = IllegalStateException.class)
     public void UserCannotBidOnClosedAuction() {
         User lambdaUser = new User();
@@ -179,5 +177,17 @@ public class AuctionTest {
         auction.makeOffer(new Offer(lambdaUser, minimalOffer));
     }
 
+    // Une vente aux enchères ne peut pas être annulée si le prix de reserve est atteint
+    @Test(expected = IllegalStateException.class)
+    public void UserCannotCancelAuctionIfReservePriceIsReached() {
+        Buyer lambdaUser = new User();
+
+        Auction auction = auctionCreator.createAuction(item, new Date(), reservePrice, minimalOffer);
+        auction.publish();
+
+        lambdaUser.placeBid(auction, reservePrice);
+
+        auction.cancel();
+    }
 
 }

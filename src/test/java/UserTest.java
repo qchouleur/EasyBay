@@ -1,14 +1,11 @@
-import junit.framework.Assert;
-import observable.ObserverSeller;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-
+import alerts.ReservePriceReachedAlert;
 import auction.Alert;
 import auction.Auction;
 import auction.Item;
 import auction.User;
-
+import junit.framework.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import time.RealClock;
 
 import java.math.BigDecimal;
@@ -34,7 +31,7 @@ public class UserTest {
     @Test
     public void UserCanReceiveAnAlert() {
 
-        author.AddAlert(alert);
+        author.receiveAlert(alert);
         List<Alert> pendingAlerts = author.getPendingAlerts();
 
         Assert.assertEquals(pendingAlerts.size(), 1);
@@ -47,7 +44,7 @@ public class UserTest {
 
         User user = new User();
         Alert alert = new Alert();
-        user.AddAlert(alert);
+        user.receiveAlert(alert);
 
         user.removeAlert(alert);
 
@@ -72,11 +69,6 @@ public class UserTest {
 
 
         Auction auction = new Auction(author, new RealClock(), item, endingDate, reservePrice, minimumOffer);
-        auction.addObserver(new ObserverSeller(){
-            public void updateSeller(Alert alert) {
-                alert.getMessage();
-              }
-            });
         auction.publish();
         
 
@@ -88,7 +80,31 @@ public class UserTest {
         //Assert.assertEquals("tutu le babtou a fait une offre de 200 sur la vente Lampadaire215", newBidAlert.getMessage());
     }
 
-	public void update(Alert alert) {
+    @Test
+    public void UserShouldNotReceiveAlertWhenUnsuscribed() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2020, Calendar.JANUARY, 9);
+        Date endingDate = calendar.getTime();
+
+        BigDecimal reservePrice = new BigDecimal(400);
+        BigDecimal minimumOffer = new BigDecimal(20);
+        Item item = new Item("Lampadaire215", "Lampadaire respectant les normes environnementales et l'ecologie dans son ensemble");
+
+        Auction auction = new Auction(author, new RealClock(), item, endingDate, reservePrice, minimumOffer);
+        auction.publish();
+
+        User firstBuyer = new User();
+
+        firstBuyer.unsuscribe(ReservePriceReachedAlert.class);
+        firstBuyer.placeBid(auction, reservePrice);
+
+
+        Assert.assertEquals(0, firstBuyer.getPendingAlerts().size());
+
+    }
+
+
+    public void update(Alert alert) {
 		alert.getMessage();
 	}
 }

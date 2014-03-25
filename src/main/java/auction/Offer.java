@@ -3,10 +3,10 @@ import java.math.BigDecimal;
 
 public class Offer implements Comparable<Offer> {
 
-    private final User bidder;
+    private final Buyer bidder;
     private final BigDecimal price;
 
-    public Offer(User bidder, BigDecimal price) {
+    public Offer(Buyer bidder, BigDecimal price) {
 
         this.bidder = bidder;
         this.price = price;
@@ -20,7 +20,7 @@ public class Offer implements Comparable<Offer> {
         return this.price.compareTo(otherPrice) >= 0;
     }
 
-    public User getBidder() {
+    public Buyer getBidder() {
         return this.bidder;
     }
 

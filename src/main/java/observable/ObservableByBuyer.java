@@ -2,12 +2,10 @@ package observable;
 
 import auction.Alert;
 
-public interface Observable {
-
-    public void add(Observer observer);
+public interface ObservableByBuyer {
+    public void add(BuyerObserver observer);
 
     public void notify(Alert alert);
 
     public void notify(Alert alert, Observer... ignoredObservers);
-
 }

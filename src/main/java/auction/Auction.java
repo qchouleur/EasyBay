@@ -1,18 +1,23 @@
 package auction;
 
+import alerts.CanceledAuctionAlert;
+import alerts.HigherBidAlert;
+import alerts.NewBidAlert;
+import alerts.ReservePriceReachedAlert;
+import observable.BuyerObserver;
 import observable.Observable;
-import observable.ObserverBuyer;
-import observable.ObserverSeller;
+import observable.ObservableByBuyer;
+import observable.Observer;
 import time.Clock;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
-
-public class Auction implements Observable{
+public class Auction {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
     
@@ -25,9 +30,9 @@ public class Auction implements Observable{
     private Offer winningOffer;
     private final Clock clock;
     private final Item item;
-    
-    private ArrayList<ObserverSeller> listObserverSeller = new ArrayList<ObserverSeller>();
-    private ArrayList<ObserverBuyer> listObserverBuyer = new ArrayList<ObserverBuyer>();
+
+    private final Observable sellerNotifier;
+    private final ObservableByBuyer buyerNotifier;
 
     public Auction(Seller seller, Clock clock, Item item, Date auctionEndingDate, BigDecimal reservePrice, BigDecimal minimalOffer) {
         if (!dateFormat.format(auctionEndingDate).equals(dateFormat.format(new Date())) &&
@@ -50,6 +55,11 @@ public class Auction implements Observable{
         this.minimalOffer = minimalOffer;
         this.clock = clock;
         this.item = item;
+
+
+        buyerNotifier = new AuctionBuyerNotifier();
+        sellerNotifier = new AuctionSellerNotifier();
+        sellerNotifier.add(seller);
     }
 
     public AuctionState getState() {
@@ -65,9 +75,14 @@ public class Auction implements Observable{
     }
 
     public void cancel() {
+
+        if (this.isReservePriceReached()) {
+            throw new IllegalStateException("An auction shall not be canceled if the reserve price is reached");
+        }
+
         this.state = AuctionState.CANCELED;
-        Alert alert = new Alert(this,"Auction is canceled");
-        this.updateObserverBuyer(alert);
+        this.buyerNotifier.notify(new CanceledAuctionAlert(this));
+
     }
 
     public Offer getHighestOffer() {
@@ -98,11 +113,15 @@ public class Auction implements Observable{
                     " yours is " + offer.getPrice());
         }
 
+        this.buyerNotifier.add(offer.getBidder());
 
-        this.updateObserverSeller(new Alert(this, offer.getBidder().name() + " a fait une offre de " + offer.getPrice() + " sur la vente " + this.item.id()));
-        this.updateObserverBuyer(new Alert(this, offer.getBidder().name() + " a fait une offre de " + offer.getPrice() + " sur la vente " + this.item.id()));
- 
-        this.getPublisher().AddAlert(new Alert(this, offer.getBidder().name() + " a fait une offre de " + offer.getPrice() + " sur la vente " + this.item.id()));
+        this.sellerNotifier.notify(new NewBidAlert(this, offer));
+        this.buyerNotifier.notify(new HigherBidAlert(this), offer.getBidder());
+
+        if (this.isReservePriceReached()) {
+            this.buyerNotifier.notify(new ReservePriceReachedAlert(this));
+        }
+
     }
 
     public BigDecimal getPriceToReach() {
@@ -112,10 +131,11 @@ public class Auction implements Observable{
     }
 
     public boolean isReservePriceReached() {
+        if (getHighestOffer() == null) {
+            return false;
+        }
         if(getHighestOffer().getPrice().compareTo(this.reservePrice) >= 0)
         {
-        	Alert alert = new Alert(this,"Reserve price is reached");
-        	this.updateObserverBuyer(alert);
         	return true;
         }
         else
@@ -125,34 +145,84 @@ public class Auction implements Observable{
     public Seller getPublisher() {
         return this.seller;
     }
-    
-    //Seller
-    
-    public void addObserver(ObserverSeller obs) {
-      this.listObserverSeller.add(obs);
+
+    public String id() {
+        return this.item.id();
     }
-    
-    public void delObserverSeller() {
-      this.listObserverSeller = new ArrayList<ObserverSeller>();
+
+    public String description() {
+        return item.description();
     }
-    
-    public void updateObserverSeller(Alert alert) {
-		for(ObserverSeller obs : this.listObserverSeller )
-			obs.updateSeller(alert);
-	}
-	
-	//Buyer
-	
-    public void addObserver(ObserverBuyer obs) {
-      this.listObserverBuyer.add(obs);
+
+    public final class AuctionSellerNotifier implements Observable {
+
+        private List<Observer> observers = new ArrayList<Observer>();
+
+        @Override
+        public void add(Observer observer) {
+            if (!this.observers.contains(observer)) {
+                this.observers.add(observer);
+            }
+        }
+
+        @Override
+        public void notify(Alert alert) {
+            for (Observer observer : observers) {
+                observer.receiveAlert(alert);
+            }
+        }
+
+        @Override
+        public void notify(Alert alert, Observer... ignoredObservers) {
+            for (Observer observer : observers) {
+                if (!ArrayContainsElement(ignoredObservers, observer)) {
+                    observer.receiveAlert(alert);
+                }
+            }
+        }
     }
-    
-    public void delObserverBuyer() {
-      this.listObserverBuyer = new ArrayList<ObserverBuyer>();
+
+    public final class AuctionBuyerNotifier implements ObservableByBuyer {
+
+        private List<BuyerObserver> observers = new ArrayList<BuyerObserver>();
+
+
+        @Override
+        public void add(BuyerObserver observer) {
+            if (!this.observers.contains(observer)) {
+                this.observers.add(observer);
+            }
+        }
+
+        @Override
+        public void notify(Alert alert) {
+            for (BuyerObserver observer : observers) {
+                if (observer.hasSubscriptionTo(alert.getClass())) {
+                    observer.receiveAlert(alert);
+                }
+            }
+        }
+
+        @Override
+        public void notify(Alert alert, Observer... ignoredObservers) {
+            for (BuyerObserver observer : observers) {
+                if (!ArrayContainsElement(ignoredObservers, observer) &&
+                        observer.hasSubscriptionTo(alert.getClass())) {
+                    observer.receiveAlert(alert);
+                }
+            }
+        }
     }
-  
-    public void updateObserverBuyer(Alert alert) {
-  		for(ObserverBuyer obs : this.listObserverBuyer )
-  			obs.updateBuyer(alert);
-  	}
+
+    private static <T> boolean ArrayContainsElement(T[] array, T searchedElement) {
+        for (T element : array) {
+            if (element == searchedElement) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
 }

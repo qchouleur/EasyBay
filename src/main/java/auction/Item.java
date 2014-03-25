@@ -1,10 +1,11 @@
 package auction;
+
 public class Item {
 
     private String id;
     private String description;
 
-    public Item()  {
+    public Item() {
 
     }
 
@@ -16,5 +17,9 @@ public class Item {
 
     public String id() {
         return this.id;
+    }
+
+    public String description() {
+        return this.description;
     }
 }

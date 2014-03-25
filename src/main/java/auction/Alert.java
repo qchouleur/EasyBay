@@ -1,4 +1,5 @@
 package auction;
+
 public class Alert {
 
     private String message;
